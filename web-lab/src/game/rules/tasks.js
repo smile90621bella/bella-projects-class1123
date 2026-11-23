@@ -14,5 +14,25 @@ import { GYOZA_IDS } from '../menu.js';
 //             report.profit      今天的淨利（不含獎金）
 // 回傳：'done'（達成）| 'failed'（沒達成）| 'wip'（施工中）
 export function checkTask(task, report) {
-  return 'wip';
+  let done;
+  switch (task.id) {
+    case 'zero-waste':
+      done = report.wasteTotal === 0;
+      break;
+    case 'no-soldout-leave':
+      done = !report.visits.some((v) => v.outcome === 'sold_out');
+      break;
+    case 'gyoza-30':
+      done = GYOZA_IDS.reduce((sum, id) => sum + (report.sold[id] || 0), 0) >= 30;
+      break;
+    case 'stars-4':
+      done = report.starsAfter >= 4;
+      break;
+    case 'profit-800':
+      done = report.profit >= 800;
+      break;
+    default:
+      return 'wip';
+  }
+  return done ? 'done' : 'failed';
 }
